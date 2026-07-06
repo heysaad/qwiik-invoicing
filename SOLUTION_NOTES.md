@@ -170,6 +170,7 @@ used paging in list endpoints to avoid loading all data at once.
 - add feature to keep history of invoice changes (audio logs).
 - use soft delete.
 - invoice PDF generation and email delivery.
+- event driven architecture using `Azure Service Bus` or `RabbitMQ`. to generate PDF, Reports, Email etc
 - payment tracking and status transitions.
 - add idempotency key to handle client retries safely.
 - background jobs for overdue invoice reminders.
