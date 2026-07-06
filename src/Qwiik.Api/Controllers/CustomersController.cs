@@ -35,14 +35,12 @@ public class CustomersController(AppDbContext db) : ControllerBase
             .Take(pageSize)
             .ToListAsync();
 
-        var totalPages = totalCount == 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize);
         return Results.Ok(new PagedResponse<CustomerResponse>
         {
             Items = customers.Adapt<List<CustomerResponse>>(),
             PageNumber = pageNumber,
             PageSize = pageSize,
-            TotalCount = totalCount,
-            TotalPages = totalPages
+            TotalCount = totalCount
         });
     }
 

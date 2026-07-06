@@ -18,4 +18,3 @@ Review and Corrections:
 - Improve db models manually
 - Db structure did not have line items
 - It put Customer details in Invoice table directly eg. CustomerName, CustomerEmail. I asked it to use separate table for customer and use FK.
-- 
