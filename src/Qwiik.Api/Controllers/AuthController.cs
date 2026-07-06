@@ -14,7 +14,7 @@ public class AuthController(
     UserManager<ApplicationUser> userManager,
     ILogger<AuthController> logger) : ControllerBase
 {
-    [HttpPost("/register", Name = "RegisterTenant", Order = -1)]
+    [HttpPost("/auth/register")]
     public async Task<IResult> Register(RegisterTenantRequest request)
     {
         await using var transaction = await db.Database.BeginTransactionAsync();

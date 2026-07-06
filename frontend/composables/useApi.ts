@@ -34,7 +34,7 @@ export function useApi() {
   }
 
   return {
-    register: (payload: { email: string; password: string }) => request<{ tenantId: string; userId: string }>('/register', { method: 'POST', body: payload }),
+    register: (payload: { email: string; password: string }) => request<{ tenantId: string; userId: string }>('/auth/register', { method: 'POST', body: payload }),
     login: (payload: { email: string; password: string }) => request<{ tokenType: string; accessToken: string; expiresIn: number; refreshToken: string }>('/login', { method: 'POST', body: payload }),
     myTenant: () => request<Tenant>('/me/tenant'),
     customers: () => request<PagedResponse<Customer>>('/customers?pageNumber=1&pageSize=50'),
