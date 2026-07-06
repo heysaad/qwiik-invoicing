@@ -36,6 +36,7 @@ docker compose up -d --build
 - business validation is mostly inside controllers for this assessment scope.
 - tenant validation is centralized in `ValidateTenant` filter.
 - database migrations are included for schema creation.
+- Used `Serilog` for structured logs.
 
 ## Domain model explanation
 
@@ -133,12 +134,8 @@ used paging in list endpoints to avoid loading all data at once.
 - Use `Azure SQL Database` for db.
 - Store connection strings in `Azure Key Vault`.
 - Run EF Core migrations during deployment pipeline or through a controlled migration job.
-- Enable HTTPS only and configure proper CORS rules if a frontend consumes this API.
-- Use Application Insights for request tracing, dependency tracking, exceptions and performance metrics.
-- Use Serilog sinks for structured logs and include tenant id in log scope where useful.
-- Configure health checks for API and database connectivity.
-- Add alerts for high error rate, slow requests, failed database connections and unusual authentication failures.
-- For scaling, keep the API stateless and scale out app instances behind Azure-managed load balancing.
+- Enable `HTTPS` only and configure `CORS`.
+- Use `Application Insights` for request tracing.
 
 ## Security considerations
 
