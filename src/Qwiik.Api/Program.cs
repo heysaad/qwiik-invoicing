@@ -3,8 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Qwiik.Api.Data;
 using Qwiik.Api.Data.Models;
 using Qwiik.Api.Data.Seeds;
+using Qwiik.Api.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
+
+MapsterConfig.Register();
 
 // Add services to the container.
 
