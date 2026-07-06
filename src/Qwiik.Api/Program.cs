@@ -16,7 +16,10 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfig
 MapsterConfig.Register();
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -40,6 +43,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -56,6 +62,7 @@ app.UseAuthorization();
 
 app.MapIdentityApi<ApplicationUser>();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();

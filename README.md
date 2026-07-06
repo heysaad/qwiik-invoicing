@@ -19,6 +19,19 @@ Qwiik Invoicing is a small multi-tenant invoicing app built with a .NET 9 Web AP
 - Node.js 22 or later
 - Docker Desktop, if running SQL Server or the API through Docker
 
+## Live deployment
+
+| App | URL |
+| --- | --- |
+| Frontend | https://qwiik-invoicing.vercel.app |
+| Backend | https://qwiik-invoicing.onrender.com |
+
+
+| Field | Value |
+| --- | --- |
+| Email | `demo@qwiik.local` |
+| Password | `Demo123!` |
+
 ## Quick start with Docker
 
 From the repository root:
@@ -68,7 +81,6 @@ By default the frontend proxies API calls from `/api/*` to `http://localhost:515
 To point the frontend at a different API origin:
 
 ```powershell
-$env:NUXT_API_ORIGIN="http://localhost:5156"
 npm run dev
 ```
 

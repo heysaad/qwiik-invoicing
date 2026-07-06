@@ -17,18 +17,17 @@ public class StartupSeed(
     public async Task RunAsync()
     {
         var tenant = await db.Tenants.SingleOrDefaultAsync(tenant => tenant.Slug == DemoTenantSlug);
-        if (tenant is null)
-        {
-            tenant = new Tenant
-            {
-                Name = DemoTenantName,
-                Slug = DemoTenantSlug
-            };
+        if (tenant is not null) return;
 
-            db.Tenants.Add(tenant);
-            await db.SaveChangesAsync();
-            logger.LogInformation("Seeded demo tenant {TenantId}.", tenant.Id);
-        }
+        tenant = new Tenant
+        {
+            Name = DemoTenantName,
+            Slug = DemoTenantSlug
+        };
+
+        db.Tenants.Add(tenant);
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded demo tenant {TenantId}.", tenant.Id);
 
         await SeedUserAsync(tenant);
         var customers = await SeedCustomersAsync(tenant.Id);
