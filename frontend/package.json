@@ -1,0 +1,26 @@
+{
+  "name": "qwiik-invoicing-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --host 0.0.0.0",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview --host 0.0.0.0",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@lucide/vue": "^1.23.0",
+    "@tailwindcss/vite": "^4.1.17",
+    "daisyui": "^5.6.13",
+    "nuxt": "^4.0.0",
+    "tailwindcss": "^4.1.17",
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.6"
+  }
+}

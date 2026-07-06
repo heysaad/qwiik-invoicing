@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+html {
+  background: #f1f5f9;
+}
+
+body {
+  min-width: 320px;
+  text-rendering: optimizeLegibility;
+}
+
+.table :where(th, td) {
+  white-space: nowrap;
+}
+
+.table :where(th) {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.table :where(tbody tr) {
+  border-color: #e2e8f0;
+}

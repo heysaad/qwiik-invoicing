@@ -362,3 +362,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 src\Qwiik.Api\Qwiik.Api.csproj.user
+
+# Nuxt / frontend generated output
+frontend/.nuxt/
+frontend/.output/
+frontend/.nitro/
+frontend/.nuxt-dev*.log
+frontend/node_modules/
