@@ -41,11 +41,30 @@ for large enterprise level apps, it should support 1 database per tenant.
 
 ## Indexing and performance strategy
 
+| Table | Index | Description
+| --- | --- | ---
+| Common | `TenantId` first in composite indexes | every query is tenant scoped
+| Invoices | `TenantId + InvoiceNumber` unique | avoid duplicate invoice numbers inside same tenant
+| Invoices | `TenantId + IssueDate` | invoice list is sorted by issue date 
+| Customers | `TenantId + Name`, `TenantId + Email` | list/search like queies
+| InvoiceItems | `TenantId + InvoiceId` | load invoice items faster
+
+used paging in list endpoints to avoid loading all data at once.
+
 ## Testing approach
 
 ## Azure deployment and monitoring considerations
 
 ## Security considerations
+
+- used ASP.NET Identity with bearer token authentication.
+- password hashing is handled by Identity.
+- use HTTPS.
+- tenant header is validated using common `[ValidateTenant]`. filter also checks whether user belongs to that tenant.
+- all customer and invoice queries include `TenantId` condition to avoid cross tenant data access.
+- connection string from user secrets / environment variables, not hardcoded config.
+- controllers protected with `[Authorize]` to allow only logged in users to access.
+- don't use `[ValidateTenant]` attribute for tenant scope endpoints. eg. auth/register, forgot password etc
 
 ## Known limitations
 

@@ -15,10 +15,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfig
 
 MapsterConfig.Register();
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -53,10 +50,7 @@ using (var scope = app.Services.CreateScope())
     await seed.RunAsync();
 }
 
-app.UseHttpsRedirection();
-
 app.UseSerilogRequestLogging();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
