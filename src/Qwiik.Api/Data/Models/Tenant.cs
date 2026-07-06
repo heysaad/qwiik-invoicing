@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Qwiik.Api.Data.Models;
 
@@ -20,6 +20,4 @@ public class Tenant
     public bool IsActive { get; set; } = true;
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-    public ICollection<ApplicationUser> Users { get; set; } = [];
 }
