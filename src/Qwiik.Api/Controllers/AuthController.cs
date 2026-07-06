@@ -8,13 +8,14 @@ using Qwiik.Api.Requests;
 namespace Qwiik.Api.Controllers;
 
 [ApiController]
-public class AuthController(UserManager<ApplicationUser> userManager) : ControllerBase
+public class AuthController(UserManager<ApplicationUser> userManager, ILogger<AuthController> logger) : ControllerBase
 {
     [HttpPost("/register", Name = "RegisterTenant", Order = -1)]
     [ValidateTenant]
     public async Task<IResult> Register(RegisterTenantRequest request)
     {
         var tenantId = Request.GetTenantId()!.Value;
+        logger.LogInformation("Registering user for tenant {TenantId}", tenantId);
 
         var user = new ApplicationUser
         {
@@ -33,6 +34,7 @@ public class AuthController(UserManager<ApplicationUser> userManager) : Controll
                 group => group.Select(error => error.Description).ToArray()));
         }
 
+        logger.LogInformation("Registered user {UserId} for tenant {TenantId}", user.Id, tenantId);
         return Results.Created($"/users/{user.Id}", new
         {
             TenantId = tenantId,

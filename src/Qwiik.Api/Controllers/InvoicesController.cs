@@ -12,7 +12,7 @@ namespace Qwiik.Api.Controllers;
 [ApiController]
 [Route("invoices")]
 [ValidateTenant]
-public class InvoicesController(AppDbContext db) : ControllerBase
+public class InvoicesController(AppDbContext db, ILogger<InvoicesController> logger) : ControllerBase
 {
     private const int MaxPageSize = 100;
 
@@ -64,19 +64,15 @@ public class InvoicesController(AppDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IResult> CreateInvoice(CreateInvoiceRequest request)
     {
+        var tenantId = Request.GetTenantId()!.Value;
         var validationResult = ValidateInvoiceDates(request.IssueDate, request.DueDate);
         if (validationResult is not null)
-        {
             return validationResult;
-        }
 
         validationResult = ValidateInvoiceItems(request.Items);
         if (validationResult is not null)
-        {
             return validationResult;
-        }
 
-        var tenantId = Request.GetTenantId()!.Value;
         var invoiceNumber = request.InvoiceNumber.Trim();
 
         var invoiceNumberExists = await db.Invoices.AnyAsync(invoice =>
@@ -115,6 +111,8 @@ public class InvoicesController(AppDbContext db) : ControllerBase
 
         db.Invoices.Add(invoice);
         await db.SaveChangesAsync();
+        logger.LogInformation("Created invoice {InvoiceId} for tenant {TenantId}", invoice.Id, tenantId);
+
         await db.Entry(invoice).Reference(savedInvoice => savedInvoice.Customer).LoadAsync();
         await db.Entry(invoice).Collection(savedInvoice => savedInvoice.Items).LoadAsync();
 
@@ -124,6 +122,7 @@ public class InvoicesController(AppDbContext db) : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IResult> UpdateInvoice(Guid id, UpdateInvoiceRequest request)
     {
+        var tenantId = Request.GetTenantId()!.Value;
         var validationResult = ValidateInvoiceDates(request.IssueDate, request.DueDate);
         if (validationResult is not null)
         {
@@ -136,7 +135,6 @@ public class InvoicesController(AppDbContext db) : ControllerBase
             return validationResult;
         }
 
-        var tenantId = Request.GetTenantId()!.Value;
         var invoice = await db.Invoices
             .Include(invoice => invoice.Items)
             .SingleOrDefaultAsync(invoice => invoice.Id == id && invoice.TenantId == tenantId);
@@ -151,9 +149,7 @@ public class InvoicesController(AppDbContext db) : ControllerBase
             existingInvoice.TenantId == tenantId &&
             existingInvoice.InvoiceNumber == invoiceNumber);
         if (invoiceNumberExists)
-        {
             return Results.Conflict(new { message = "Invoice number already exists for this tenant." });
-        }
 
         var customerExists = await db.Customers.AnyAsync(customer =>
             customer.Id == request.CustomerId && customer.TenantId == tenantId);
@@ -181,6 +177,8 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         invoice.Items = items;
 
         await db.SaveChangesAsync();
+        logger.LogInformation("Updated invoice {InvoiceId} for tenant {TenantId}", invoice.Id, tenantId);
+
         await db.Entry(invoice).Reference(savedInvoice => savedInvoice.Customer).LoadAsync();
         await db.Entry(invoice).Collection(savedInvoice => savedInvoice.Items).LoadAsync();
 
@@ -191,6 +189,8 @@ public class InvoicesController(AppDbContext db) : ControllerBase
     public async Task<IResult> DeleteInvoice(Guid id)
     {
         var tenantId = Request.GetTenantId()!.Value;
+        logger.LogInformation("Deleting invoice {InvoiceId} for tenant {TenantId}", id, tenantId);
+
         var invoice = await db.Invoices.SingleOrDefaultAsync(invoice => invoice.Id == id && invoice.TenantId == tenantId);
         if (invoice is null)
         {

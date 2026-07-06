@@ -12,7 +12,7 @@ namespace Qwiik.Api.Controllers;
 [ApiController]
 [Route("customers")]
 [ValidateTenant]
-public class CustomersController(AppDbContext db) : ControllerBase
+public class CustomersController(AppDbContext db, ILogger<CustomersController> logger) : ControllerBase
 {
     private const int MaxPageSize = 100;
 
@@ -23,6 +23,7 @@ public class CustomersController(AppDbContext db) : ControllerBase
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
         var tenantId = Request.GetTenantId()!.Value;
+
         var query = db.Customers
             .AsNoTracking()
             .Where(customer => customer.TenantId == tenantId)
@@ -72,6 +73,7 @@ public class CustomersController(AppDbContext db) : ControllerBase
 
         db.Customers.Add(customer);
         await db.SaveChangesAsync();
+        logger.LogInformation("Created customer {CustomerId} for tenant {TenantId}", customer.Id, tenantId);
 
         return Results.Created($"/customers/{customer.Id}", customer.Adapt<CustomerResponse>());
     }
@@ -93,6 +95,7 @@ public class CustomersController(AppDbContext db) : ControllerBase
         customer.UpdatedAt = DateTimeOffset.UtcNow;
 
         await db.SaveChangesAsync();
+        logger.LogInformation("Updated customer {CustomerId} for tenant {TenantId}", customer.Id, tenantId);
 
         return Results.Ok(customer.Adapt<CustomerResponse>());
     }
@@ -101,20 +104,18 @@ public class CustomersController(AppDbContext db) : ControllerBase
     public async Task<IResult> DeleteCustomer(Guid id)
     {
         var tenantId = Request.GetTenantId()!.Value;
+
         var customer = await db.Customers.SingleOrDefaultAsync(customer => customer.Id == id && customer.TenantId == tenantId);
         if (customer is null)
-        {
             return Results.NotFound();
-        }
 
         var hasInvoices = await db.Invoices.AnyAsync(invoice => invoice.CustomerId == id && invoice.TenantId == tenantId);
         if (hasInvoices)
-        {
             return Results.Conflict(new { message = "Customer cannot be deleted while invoices reference it." });
-        }
 
         db.Customers.Remove(customer);
         await db.SaveChangesAsync();
+        logger.LogInformation("Deleted customer {CustomerId} for tenant {TenantId}", customer.Id, tenantId);
 
         return Results.NoContent();
     }

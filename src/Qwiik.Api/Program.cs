@@ -4,8 +4,14 @@ using Qwiik.Api.Data;
 using Qwiik.Api.Data.Models;
 using Qwiik.Api.Data.Seeds;
 using Qwiik.Api.Mapping;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 MapsterConfig.Register();
 
@@ -48,6 +54,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
