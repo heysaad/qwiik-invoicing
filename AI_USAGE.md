@@ -6,13 +6,13 @@ Tool used: Codex with Visual Studio Code
 
 it created a quick prototype with basic auth flow
 
-Review and Correction:
+**Review and Correction:**
 - AI generated whole code in `Program.cs`. I asked it to move to AuthController
 - It assumed tenant id as request param, I changed the logic to read from header
 
 ### 2. Asked to scafffold invoice controller
 
-Review and Corrections:
+**Review and Corrections:**
 - Ai generated only inline class mappings. I asked it to use Mapster to map VMs
 - Improve db models manually
 - Db structure did not have line items
@@ -36,7 +36,15 @@ build the frontend in vuejs to demostrate this api flow. put code under [fronten
 9. UI must be clean, compact, modern.
 ```
 
-Review and Corrections:
+**Review and Corrections:**
 - UI fixes, 
 - forms redesign, 
 - layout corrections
+
+### 4. README.md
+
+README.md is completely generated using AI.
+
+**Review and Corrections:**
+- added demo login details from seed data
+- added link to demo app url
