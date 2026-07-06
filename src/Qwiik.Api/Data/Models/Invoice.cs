@@ -14,6 +14,7 @@ public class Invoice
     public Guid TenantId { get; set; }
 
     [ForeignKey(nameof(TenantId))]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Tenant? Tenant { get; set; }
 
     [Required]
@@ -23,6 +24,7 @@ public class Invoice
     public Guid CustomerId { get; set; }
 
     [ForeignKey(nameof(CustomerId))]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Customer? Customer { get; set; }
 
     public DateOnly IssueDate { get; set; }

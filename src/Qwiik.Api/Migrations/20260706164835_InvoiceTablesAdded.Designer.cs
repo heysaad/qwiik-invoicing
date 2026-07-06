@@ -12,7 +12,7 @@ using Qwiik.Api.Data;
 namespace Qwiik.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260706134709_InvoiceTablesAdded")]
+    [Migration("20260706164835_InvoiceTablesAdded")]
     partial class InvoiceTablesAdded
     {
         /// <inheritdoc />
@@ -455,7 +455,8 @@ namespace Qwiik.Api.Migrations
                 {
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Tenant");
                 });
@@ -465,7 +466,7 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Tenant");
@@ -476,13 +477,13 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Customer", "Customer")
                         .WithMany("Invoices")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -501,7 +502,7 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Invoice");

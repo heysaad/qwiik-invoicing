@@ -263,7 +263,7 @@ namespace Qwiik.Api.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Qwiik.Api.Data.Models.Invoice", b =>
@@ -323,7 +323,7 @@ namespace Qwiik.Api.Migrations
 
                     b.HasIndex("TenantId", "IssueDate");
 
-                    b.ToTable("Invoices");
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("Qwiik.Api.Data.Models.InvoiceItem", b =>
@@ -364,7 +364,7 @@ namespace Qwiik.Api.Migrations
 
                     b.HasIndex("TenantId", "InvoiceId");
 
-                    b.ToTable("InvoiceItems");
+                    b.ToTable("InvoiceItems", (string)null);
                 });
 
             modelBuilder.Entity("Qwiik.Api.Data.Models.Tenant", b =>
@@ -394,7 +394,7 @@ namespace Qwiik.Api.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Tenants");
+                    b.ToTable("Tenants", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -452,7 +452,8 @@ namespace Qwiik.Api.Migrations
                 {
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Tenant");
                 });
@@ -462,7 +463,7 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Tenant");
@@ -473,13 +474,13 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Customer", "Customer")
                         .WithMany("Invoices")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -498,7 +499,7 @@ namespace Qwiik.Api.Migrations
                     b.HasOne("Qwiik.Api.Data.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Invoice");

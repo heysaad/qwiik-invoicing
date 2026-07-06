@@ -14,6 +14,7 @@ public class Customer
     public Guid TenantId { get; set; }
 
     [ForeignKey(nameof(TenantId))]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Tenant? Tenant { get; set; }
 
     [Required]

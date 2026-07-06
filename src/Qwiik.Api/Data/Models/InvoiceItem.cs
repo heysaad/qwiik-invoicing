@@ -13,11 +13,13 @@ public class InvoiceItem
     public Guid TenantId { get; set; }
 
     [ForeignKey(nameof(TenantId))]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Tenant? Tenant { get; set; }
 
     public Guid InvoiceId { get; set; }
 
     [ForeignKey(nameof(InvoiceId))]
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public Invoice? Invoice { get; set; }
 
     public int Position { get; set; }

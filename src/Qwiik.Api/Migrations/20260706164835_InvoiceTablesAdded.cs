@@ -11,10 +11,6 @@ namespace Qwiik.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_Tenants_TenantId",
-                table: "AspNetUsers");
-
             migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
@@ -36,7 +32,7 @@ namespace Qwiik.Api.Migrations
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,13 +61,13 @@ namespace Qwiik.Api.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invoices_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,7 +97,7 @@ namespace Qwiik.Api.Migrations
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -139,22 +135,11 @@ namespace Qwiik.Api.Migrations
                 name: "IX_Invoices_TenantId_IssueDate",
                 table: "Invoices",
                 columns: new[] { "TenantId", "IssueDate" });
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Tenants_TenantId",
-                table: "AspNetUsers",
-                column: "TenantId",
-                principalTable: "Tenants",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_Tenants_TenantId",
-                table: "AspNetUsers");
-
             migrationBuilder.DropTable(
                 name: "InvoiceItems");
 
@@ -163,14 +148,6 @@ namespace Qwiik.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Tenants_TenantId",
-                table: "AspNetUsers",
-                column: "TenantId",
-                principalTable: "Tenants",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
     }
 }

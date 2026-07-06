@@ -124,35 +124,28 @@ public class InvoicesController(AppDbContext db, ILogger<InvoicesController> log
     {
         var tenantId = Request.GetTenantId()!.Value;
         var validationResult = ValidateInvoiceDates(request.IssueDate, request.DueDate);
-        if (validationResult is not null)
-        {
-            return validationResult;
-        }
+        if (validationResult is not null) return validationResult;
 
         validationResult = ValidateInvoiceItems(request.Items);
-        if (validationResult is not null)
-        {
-            return validationResult;
-        }
+        if (validationResult is not null) return validationResult;
 
         var invoice = await db.Invoices
             .Include(invoice => invoice.Items)
             .SingleOrDefaultAsync(invoice => invoice.Id == id && invoice.TenantId == tenantId);
+
         if (invoice is null)
-        {
             return Results.NotFound();
-        }
 
         var invoiceNumber = request.InvoiceNumber.Trim();
         var invoiceNumberExists = await db.Invoices.AnyAsync(existingInvoice =>
             existingInvoice.Id != id &&
             existingInvoice.TenantId == tenantId &&
             existingInvoice.InvoiceNumber == invoiceNumber);
+
         if (invoiceNumberExists)
             return Results.Conflict(new { message = "Invoice number already exists for this tenant." });
 
-        var customerExists = await db.Customers.AnyAsync(customer =>
-            customer.Id == request.CustomerId && customer.TenantId == tenantId);
+        var customerExists = await db.Customers.AnyAsync(customer => customer.Id == request.CustomerId && customer.TenantId == tenantId);
         if (!customerExists)
         {
             return Results.ValidationProblem(new Dictionary<string, string[]>
@@ -162,6 +155,9 @@ public class InvoicesController(AppDbContext db, ILogger<InvoicesController> log
         }
 
         var items = CreateInvoiceItems(tenantId, request.Items);
+        foreach (var item in items)
+            item.InvoiceId = invoice.Id;
+
         var subtotal = items.Sum(item => item.LineTotal);
         invoice.InvoiceNumber = invoiceNumber;
         invoice.CustomerId = request.CustomerId;
@@ -173,10 +169,11 @@ public class InvoicesController(AppDbContext db, ILogger<InvoicesController> log
         invoice.Status = request.Status;
         invoice.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
         invoice.UpdatedAt = DateTimeOffset.UtcNow;
-        db.InvoiceItems.RemoveRange(invoice.Items);
-        invoice.Items = items;
 
+        db.InvoiceItems.RemoveRange(invoice.Items);
+        db.InvoiceItems.AddRange(items);
         await db.SaveChangesAsync();
+
         logger.LogInformation("Updated invoice {InvoiceId} for tenant {TenantId}", invoice.Id, tenantId);
 
         await db.Entry(invoice).Reference(savedInvoice => savedInvoice.Customer).LoadAsync();
@@ -192,10 +189,7 @@ public class InvoicesController(AppDbContext db, ILogger<InvoicesController> log
         logger.LogInformation("Deleting invoice {InvoiceId} for tenant {TenantId}", id, tenantId);
 
         var invoice = await db.Invoices.SingleOrDefaultAsync(invoice => invoice.Id == id && invoice.TenantId == tenantId);
-        if (invoice is null)
-        {
-            return Results.NotFound();
-        }
+        if (invoice is null) return Results.NotFound();
 
         db.Invoices.Remove(invoice);
         await db.SaveChangesAsync();
