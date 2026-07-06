@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,27 @@ public sealed class ValidateTenantFilter(AppDbContext db) : IAsyncActionFilter
         {
             context.Result = CreateValidationResult("Tenant does not exist or is inactive.");
             return;
+        }
+
+        var user = context.HttpContext.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
+            var isTenantMember = await db.Users.AnyAsync(dbUser =>
+                dbUser.Id == userId &&
+                dbUser.TenantId == tenantId.Value);
+
+            if (!isTenantMember)
+            {
+                context.Result = new ForbidResult();
+                return;
+            }
         }
 
         await next();
