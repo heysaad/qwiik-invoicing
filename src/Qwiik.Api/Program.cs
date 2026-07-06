@@ -18,10 +18,7 @@ MapsterConfig.Register();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-});
+builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
