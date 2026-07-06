@@ -14,16 +14,49 @@ docker compose up -d --build
 ## Your assumptions
 
 - This project is only to demonstrate invoicing basic api structure.
-- user authentication flow is not the priority. so added basic auth flow
+- user authentication flow is not the priority. so added basic auth flow.
+- each request will send `X-Tenant-Id` header.
+- invoice number should be unique only inside same tenant.
+- invoice total is calculated from invoice items and tax.
+- payment collection and invoice PDF generation are out of scope.
+- one user per tenant is enough for current scope.
 
 ## Architecture overview
 
+| Layer | Responsibility |
+| --- | --- |
+| Controllers | expose customer, invoice and auth endpoints |
+| Requests | request and response DTOs for API contract |
+| Data/Models | EF Core entities for tenant, customer and invoice data |
+| AppDbContext | database access using EF Core |
+| Filters | common tenant validation before controller action |
+| Mapping | Mapster config for entity to response mapping |
+
+- API is kept simple with controller based structure.
+- business validation is mostly inside controllers for this assessment scope.
+- tenant validation is centralized in `ValidateTenant` filter.
+- database migrations are included for schema creation.
+
 ## Domain model explanation
+
+- tenant is the root boundary for business data.
+- customer can have multiple invoices.
+- invoice total is calculated from items subtotal + tax.
+- invoice status is stored using enum for fixed values.
 
 ## Database design explanation
 
-- Tenants
-- Users
+| Table | Purpose |
+| --- | --- |
+| Tenants | store tenant details like name, slug and active status |
+| Users | ASP.NET Identity users mapped to tenant |
+| Customers | customer details for each tenant |
+| Invoices | invoice header details like number, dates, status and totals |
+| InvoiceItems | invoice line items with quantity, price and line total |
+
+- every table has `TenantId` for tenant isolation.
+- `Invoice` belongs to one `Customer`.
+- `Invoice` has many `InvoiceItems`.
 
 ## API design explanation
 
