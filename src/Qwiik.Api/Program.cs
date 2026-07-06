@@ -18,7 +18,10 @@ MapsterConfig.Register();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
 builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -50,10 +53,17 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
+
+    if(context.Database.GetPendingMigrations().Any())
+    {
+        app.Logger.LogInformation("Applying database migrations.");
+        context.Database.Migrate();
+    }
 
     var seed = services.GetRequiredService<StartupSeed>();
+    app.Logger.LogInformation("Running startup seed.");
     await seed.RunAsync();
+    app.Logger.LogInformation("Startup seed completed.");
 }
 
 app.UseSerilogRequestLogging();
@@ -65,4 +75,5 @@ app.MapIdentityApi<ApplicationUser>();
 app.MapHealthChecks("/health");
 app.MapControllers();
 
+app.Logger.LogInformation("Starting API.");
 app.Run();
